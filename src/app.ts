@@ -7,7 +7,18 @@ import { errorHandler } from './middlewares/error.middleware';
 
 const app = express();
 
-app.use(express.json());
+app.use((req, res, next) => {
+  express.json()(req, res, (err: any) => {
+    if (err) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid JSON',
+        errors: 'Invalid JSON in request body',
+      });
+    }
+    next();
+  });
+});
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/v1/auth', authRoutes);
